@@ -2,16 +2,19 @@ package airazor
 
 import (
 	"encoding/base64"
-	"net/url"
 )
 
 // One of the following fields
 type Authorization struct {
 	None   bool
-	Basic  *url.Userinfo
+	Basic  *AuthorizationBasic
 	Bearer string
 	Raw    string
 	JWT    *AuthorizationJWT
+}
+
+type AuthorizationBasic struct {
+	User, Password string
 }
 
 type AuthorizationJWT struct {
@@ -29,8 +32,8 @@ func (auth *Authorization) Header(previous string) string {
 		return ""
 	}
 	if basic := auth.Basic; basic != nil {
-		return "Basic " +
-			base64.URLEncoding.EncodeToString([]byte(basic.String()))
+		code := []byte(basic.User + ":" + basic.Password)
+		return "Basic " + base64.URLEncoding.EncodeToString(code)
 	}
 	if bearer := auth.Bearer; bearer != "" {
 		return "Bearer " + bearer

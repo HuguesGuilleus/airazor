@@ -1,7 +1,6 @@
 package airazor
 
 import (
-	"net/url"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -13,7 +12,7 @@ func TestAuthentificationNone(t *testing.T) {
 func TestAuthentificationBasic(t *testing.T) {
 	assert.Equal(t, "Basic YWxhZGRpbjpzZXNhbWVPdXZyZVRvaQ==",
 		(&Authorization{
-			Basic: url.UserPassword("aladdin", "sesameOuvreToi"),
+			Basic: &AuthorizationBasic{"aladdin", "sesameOuvreToi"},
 		}).Header("foo"))
 }
 func TestAuthentificationBearer(t *testing.T) {
