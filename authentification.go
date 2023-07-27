@@ -34,8 +34,8 @@ type AuthorizationJWT struct {
 }
 
 // Generate the string to be used in HTTP headers. If the authentification is not defined,
-func (auth *Authorization) Header(previous string, now time.Time) string {
-	if auth.None {
+func (auth *Authorization) Header(now time.Time) string {
+	if auth == nil || auth.None {
 		return ""
 	}
 	if basic := auth.Basic; basic != nil {
@@ -82,7 +82,7 @@ func (auth *Authorization) Header(previous string, now time.Time) string {
 		return "Bearer " + jose + "." + body + "." + signature
 	}
 
-	return previous
+	return ""
 }
 
 // Merge the 2 map in a new one.

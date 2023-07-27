@@ -6,13 +6,15 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/url"
+	"time"
 )
 
 type Collection struct {
 	parent *Collection
 
 	Name string
-	Authorization
+
+	*Authorization `json:"authorization,omitempty"`
 
 	Requests []*Request
 	Children []*Collection
@@ -21,7 +23,10 @@ type Collection struct {
 type Request struct {
 	parent *Collection
 
-	Name   string      `json:"name,omitempty"`
+	Name string `json:"name,omitempty"`
+
+	*Authorization `json:"authorization,omitempty"`
+
 	Method string      `json:"method,omitempty"`
 	URL    *url.URL    `json:"url,omitempty"`
 	Header http.Header `json:"header,omitempty"`
@@ -46,4 +51,19 @@ func (c *Collection) buildTree() {
 	for _, request := range c.Requests {
 		request.parent = c
 	}
+}
+
+func (r *Request) getAuth() (auth string) {
+	now := time.Now()
+
+	auth = r.Authorization.Header(now)
+	parent := r.parent
+	for auth == "" && parent != nil {
+		if parent.Authorization != nil && parent.Authorization.None {
+			return
+		}
+		auth = parent.Authorization.Header(now)
+		parent = parent.parent
+	}
+	return
 }
