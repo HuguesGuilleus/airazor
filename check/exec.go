@@ -41,6 +41,8 @@ func newRuntime() *runtime {
 	r.define(assert, "true", r.assertTrue)
 	r.define(assert, "false", r.assertFalse)
 	r.define(assert, "null", r.assertNull)
+	r.define(assert, "truely", r.assertTruely)
+	r.define(assert, "falsy", r.assertFalsy)
 
 	r.vm.RunString("Object.seal(assert);")
 
@@ -94,21 +96,32 @@ func (r *runtime) assert(a, b goja.Value) {
 }
 
 func (r *runtime) assertTrue(v goja.Value) {
-	r.assertSpecific("true", r.vm.ToValue(true), v)
+	r.assertSpecific("true", r.vm.ToValue(true).StrictEquals(v), v)
 }
 func (r *runtime) assertFalse(v goja.Value) {
-	r.assertSpecific("false", r.vm.ToValue(false), v)
+	r.assertSpecific("false", r.vm.ToValue(false).StrictEquals(v), v)
 }
 func (r *runtime) assertNull(v goja.Value) {
-	r.assertSpecific("null", goja.Null(), v)
+	r.assertSpecific("null", goja.Null().StrictEquals(v), v)
 }
-func (r *runtime) assertSpecific(name string, expected, v goja.Value) {
-	if !expected.StrictEquals(v) {
+
+func (r *runtime) assertTruely(v goja.Value) {
+	constructor, _ := goja.AssertConstructor(r.vm.Get("Boolean"))
+	b, _ := constructor(nil, v)
+	r.assertSpecific("truely", r.vm.ToValue(true).Equals(b), v)
+}
+func (r *runtime) assertFalsy(v goja.Value) {
+	constructor, _ := goja.AssertConstructor(r.vm.Get("Boolean"))
+	b, _ := constructor(nil, v)
+	r.assertSpecific("falsy", r.vm.ToValue(false).Equals(b), v)
+}
+
+func (r *runtime) assertSpecific(name string, equal bool, v goja.Value) {
+	if !equal {
 		buff := bytes.Buffer{}
 		buff.WriteString("assert ")
 		buff.WriteString(name)
 		buff.WriteString(", but found:\n")
-
 		printValue(&buff, v)
 
 		r.print = append(r.print, buff.String())
