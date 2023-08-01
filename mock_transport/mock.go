@@ -7,6 +7,8 @@ import (
 
 const Transport = transport(0)
 const (
+	HeaderServer = "mockTransport"
+
 	Body = "Hello golang!"
 
 	UrlOk   = "https://example.com/ok"
@@ -17,6 +19,8 @@ type transport uintptr
 
 func (transport) RoundTrip(request *http.Request) (*http.Response, error) {
 	response := httptest.NewRecorder()
+	response.HeaderMap.Set("Server", HeaderServer)
+
 	switch request.URL.String() {
 	case UrlOk:
 		response.Code = http.StatusOK
@@ -25,7 +29,15 @@ func (transport) RoundTrip(request *http.Request) (*http.Response, error) {
 	default:
 		response.Code = http.StatusNotFound
 	}
-	response.HeaderMap.Set("Server", "mockTransport")
+
 	response.Write([]byte(Body))
 	return response.Result(), nil
+}
+
+// Just check the request, then execute Transport.RoundTrip()
+type Inspector func(*http.Request)
+
+func (f Inspector) RoundTrip(request *http.Request) (*http.Response, error) {
+	f(request)
+	return Transport.RoundTrip(request)
 }
