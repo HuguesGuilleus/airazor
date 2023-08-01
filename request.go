@@ -10,6 +10,8 @@ import (
 	"io"
 	"net/http"
 	"time"
+
+	"github.capgemini.com/hugues-guilleus/airazor/check"
 )
 
 type Collection struct {
@@ -42,6 +44,7 @@ type Response struct {
 	StatusCode int
 	Header     http.Header
 	Body       []byte
+	TestFails  []string
 }
 
 type Config struct {
@@ -82,11 +85,25 @@ func (config *Config) Fetch(request *Request) (*Response, error) {
 		return nil, fmt.Errorf("Get all reponse body of %q: %w", request.URL, err)
 	}
 
-	return &Response{
+	response := &Response{
 		StatusCode: httpResponse.StatusCode,
 		Header:     httpResponse.Header,
 		Body:       body,
-	}, nil
+	}
+
+	response.test(request.Test)
+
+	return response, nil
+}
+
+func (r *Response) test(src string) {
+	if src == "" {
+		return
+	}
+	r.TestFails = check.Run(src, map[string]any{
+		"code": r.StatusCode,
+		"text": func() string { return string(r.Body) },
+	})
 }
 
 // Get the ID of the request based on the

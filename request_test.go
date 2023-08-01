@@ -39,6 +39,7 @@ func TestFetch(t *testing.T) {
 			"Authorization": []string{"removed value"},
 		},
 		Body: "The body",
+		Test: `assert(42, code);`,
 	})
 	assert.NoError(t, err)
 	assert.True(t, called)
@@ -46,6 +47,7 @@ func TestFetch(t *testing.T) {
 	assert.Equal(t, 200, response.StatusCode)
 	assert.Equal(t, mock_transport.HeaderServer, response.Header.Get("Server"))
 	assert.Equal(t, mock_transport.Body[:5], string(response.Body))
+	assert.Len(t, response.TestFails, 1)
 
 	assert.True(t, called)
 }
