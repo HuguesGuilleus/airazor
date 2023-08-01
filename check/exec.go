@@ -9,13 +9,18 @@ import (
 
 const filename = "check"
 
-func Run(src string) []string {
+func Run(src string, imports map[string]any) []string {
 	prog, err := goja.Compile(filename, src, true)
 	if err != nil {
 		return []string{"compile fail: " + err.Error()}
 	}
 
 	r := newRuntime()
+
+	for key, value := range imports {
+		r.define(nil, key, value)
+	}
+
 	_, err = r.vm.RunProgram(prog)
 	if err != nil {
 		r.print = append(r.print, "run fail: "+err.Error())
