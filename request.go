@@ -11,7 +11,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.capgemini.com/hugues-guilleus/airazor/check"
+	"github.com/HuguesGuilleus/airazor/check"
 )
 
 type Collection struct {

@@ -1,4 +1,4 @@
-module github.capgemini.com/hugues-guilleus/airazor
+module github.com/HuguesGuilleus/airazor
 
 go 1.20
 

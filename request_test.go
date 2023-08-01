@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.capgemini.com/hugues-guilleus/airazor/mock_transport"
+	"github.com/HuguesGuilleus/airazor/mock_transport"
 	"github.com/stretchr/testify/assert"
 )
 
