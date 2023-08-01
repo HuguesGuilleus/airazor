@@ -1,10 +1,54 @@
 package airazor
 
 import (
+	"context"
+	"io"
+	"net/http"
 	"testing"
 
+	"github.capgemini.com/hugues-guilleus/airazor/mock_transport"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestFetch(t *testing.T) {
+	called := false
+
+	config := Config{
+		LimitBody:  5,
+		NewContext: context.Background,
+		RoundTripper: mock_transport.Inspector(func(request *http.Request) {
+			called = true
+			assert.Equal(t, "METHOD", request.Method)
+			assert.Equal(t, []string{"V1", "V2"}, request.Header.Values("H"))
+			assert.Equal(t, []string{"sésame"}, request.Header.Values("Authorization"))
+
+			body, err := io.ReadAll(request.Body)
+			assert.NoError(t, err)
+			assert.Equal(t, "The body", string(body))
+		}),
+	}
+
+	response, err := config.Fetch(&Request{
+		parent: &Collection{
+			Authorization: &Authorization{Raw: "sésame"},
+		},
+		Method: "METHOD",
+		URL:    mock_transport.UrlOk,
+		Header: http.Header{
+			"H":             []string{"V1", "V2"},
+			"Authorization": []string{"removed value"},
+		},
+		Body: "The body",
+	})
+	assert.NoError(t, err)
+	assert.True(t, called)
+
+	assert.Equal(t, 200, response.StatusCode)
+	assert.Equal(t, mock_transport.HeaderServer, response.Header.Get("Server"))
+	assert.Equal(t, mock_transport.Body[:5], string(response.Body))
+
+	assert.True(t, called)
+}
 
 func TestRequestID(t *testing.T) {
 	r := Request{Name: "yolo"}
