@@ -37,5 +37,36 @@ function $treeItem(col) {
 			" ", $("button.execute", "-"),
 		),
 		(col.children || []).map($treeItem),
+		(col.requests || []).map($treeRequest),
 	);
+}
+
+function $treeRequest(request) {
+	return {
+		$: "div.tree-item",
+		c: [
+			$("div.tree-name", request.name),
+		],
+		onclick() { $$content(request) },
+	};
+}
+
+function $$content(request) {
+	render([
+		{ $: "textarea", name: "head", rows: 10, placeholder: "head", t: headContent(request) },
+		{ $: "textarea", name: "body", rows: 10, placeholder: "body" },
+		{ $: "textarea", name: "test", rows: 10, placeholder: "test" },
+		$("button.send", "Send"),
+		{ $: "code.status", title: "HTTP Status", t: "200 OK +++++++++++" },
+		$("output.result-head", "result-head"),
+		$("output.result-body", "result-body"),
+		$("output.result-test", "result-test"),
+	], document.querySelector("div.content"))
+}
+
+function headContent(request) {
+	return [
+		request.method + " " + request.URL,
+		// ...(request.header || [])
+	].join("\n");
 }

@@ -38,13 +38,16 @@ type Request struct {
 	Body   string      `json:"body,omitempty"`
 
 	Test string `json:"test,omitempty"`
+
+	Response *Response `json:"response"`
 }
 
 type Response struct {
-	StatusCode int
-	Header     http.Header
-	Body       []byte
-	TestFails  []string
+	Name       string      `json:"name"`
+	StatusCode int         `json:"StatusCode"`
+	Header     http.Header `json:"Header"`
+	Body       []byte      `json:"Body"`
+	TestFails  []string    `json:"TestFails"`
 }
 
 type Config struct {
