@@ -17,12 +17,12 @@ import (
 type Collection struct {
 	parent *Collection
 
-	Name string
+	Name string `json:"name"`
 
 	*Authorization `json:"authorization,omitempty"`
 
-	Requests []*Request
-	Children []*Collection
+	Requests []*Request    `json:"requests"`
+	Children []*Collection `json:"children"`
 }
 
 type Request struct {
