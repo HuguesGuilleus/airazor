@@ -19,13 +19,13 @@ func main() {
 }
 
 var (
-	//go:embed index.html
+	//go:embed front/index.html
 	indexHTML []byte
 
-	//go:embed style.css
+	//go:embed front/style.css
 	styleCSS []byte
 
-	//go:embed index.js
+	//go:embed front/index.js
 	indexJs []byte
 )
 
