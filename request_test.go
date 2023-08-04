@@ -28,7 +28,7 @@ func TestFetch(t *testing.T) {
 		}),
 	}
 
-	response, err := config.Fetch(&Request{
+	request := &Request{
 		parent: &Collection{
 			Authorization: &Authorization{Raw: "sésame"},
 		},
@@ -40,10 +40,13 @@ func TestFetch(t *testing.T) {
 		},
 		Body: "The body",
 		Test: `assert(42, code);`,
-	})
+	}
+
+	err := request.Fetch(&config)
 	assert.NoError(t, err)
 	assert.True(t, called)
 
+	response := request.Response
 	assert.Equal(t, 200, response.StatusCode)
 	assert.Equal(t, mock_transport.HeaderServer, response.Header.Get("Server"))
 	assert.Equal(t, mock_transport.Body[:5], string(response.Body))

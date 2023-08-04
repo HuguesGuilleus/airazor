@@ -25,6 +25,7 @@ type Request struct {
 
 	Test string `json:"test,omitempty"`
 
+	Error    string    `json:"Error,omitempty"`
 	Response *Response `json:"response,omitempty"`
 }
 
@@ -42,7 +43,7 @@ type Config struct {
 	LimitBody int64
 }
 
-func (config *Config) Fetch(request *Request) (*Response, error) {
+func (request *Request) Fetch(config *Config) error {
 	httpRequest, err := http.NewRequestWithContext(
 		config.NewContext(),
 		request.Method,
@@ -50,7 +51,9 @@ func (config *Config) Fetch(request *Request) (*Response, error) {
 		bytes.NewReader([]byte(request.Body)),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("Make request %q: %w", request.URL, err)
+		err = fmt.Errorf("Make request %q: %w", request.URL, err)
+		request.Error = err.Error()
+		return err
 	}
 
 	for key, values := range request.Header {
@@ -65,24 +68,28 @@ func (config *Config) Fetch(request *Request) (*Response, error) {
 
 	httpResponse, err := config.RoundTrip(httpRequest)
 	if err != nil {
-		return nil, fmt.Errorf("Fetch %q: %w", request.URL, err)
+		err = fmt.Errorf("Fetch %q: %w", request.URL, err)
+		request.Error = err.Error()
+		return err
 	}
 	defer httpResponse.Body.Close()
 
 	body, err := io.ReadAll(io.LimitReader(httpResponse.Body, config.LimitBody))
 	if err != nil {
-		return nil, fmt.Errorf("Get all reponse body of %q: %w", request.URL, err)
+		err = fmt.Errorf("Get all reponse body of %q: %w", request.URL, err)
+		request.Error = err.Error()
+		return err
 	}
 
-	response := &Response{
+	request.Response = &Response{
 		StatusCode: httpResponse.StatusCode,
 		Header:     httpResponse.Header,
 		Body:       body,
 	}
 
-	response.test(request.Test)
+	request.Response.test(request.Test)
 
-	return response, nil
+	return nil
 }
 
 func (r *Response) test(src string) {

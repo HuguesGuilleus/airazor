@@ -1,5 +1,7 @@
 package airazor
 
+import "sync"
+
 type Collection struct {
 	parent *Collection
 
@@ -29,5 +31,24 @@ func (c *Collection) removeResponse() {
 	}
 	for _, request := range c.Requests {
 		request.Response = nil
+	}
+}
+
+func (c *Collection) Fetch(config *Config) {
+	wg := sync.WaitGroup{}
+	defer wg.Wait()
+	c.fetch(config, &wg)
+}
+
+func (c *Collection) fetch(config *Config, wg *sync.WaitGroup) {
+	for _, child := range c.Children {
+		child.fetch(config, wg)
+	}
+	wg.Add(len(c.Requests))
+	for _, request := range c.Requests {
+		go func(r *Request) {
+			defer wg.Done()
+			r.Fetch(config)
+		}(request)
 	}
 }
