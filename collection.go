@@ -21,3 +21,13 @@ func (c *Collection) buildTree() {
 		request.parent = c
 	}
 }
+
+// Remove all response object of all requests.
+func (c *Collection) removeResponse() {
+	for _, child := range c.Children {
+		child.removeResponse()
+	}
+	for _, request := range c.Requests {
+		request.Response = nil
+	}
+}

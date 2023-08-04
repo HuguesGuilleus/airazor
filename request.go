@@ -3,9 +3,6 @@ package airazor
 import (
 	"bytes"
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -28,7 +25,7 @@ type Request struct {
 
 	Test string `json:"test,omitempty"`
 
-	Response *Response `json:"response"`
+	Response *Response `json:"response,omitempty"`
 }
 
 type Response struct {
@@ -96,13 +93,6 @@ func (r *Response) test(src string) {
 		"code": r.StatusCode,
 		"text": func() string { return string(r.Body) },
 	})
-}
-
-// Get the ID of the request based on the
-func (r *Request) ID() string {
-	data, _ := json.Marshal(r)
-	h := sha256.Sum256(data)
-	return hex.EncodeToString(h[:])
 }
 
 func (r *Request) getAuth() (auth string) {
