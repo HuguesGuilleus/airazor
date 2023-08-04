@@ -14,17 +14,6 @@ import (
 	"github.com/HuguesGuilleus/airazor/check"
 )
 
-type Collection struct {
-	parent *Collection
-
-	Name string `json:"name"`
-
-	*Authorization `json:"authorization,omitempty"`
-
-	Requests []*Request    `json:"requests"`
-	Children []*Collection `json:"children"`
-}
-
 type Request struct {
 	parent *Collection
 
@@ -114,17 +103,6 @@ func (r *Request) ID() string {
 	data, _ := json.Marshal(r)
 	h := sha256.Sum256(data)
 	return hex.EncodeToString(h[:])
-}
-
-// Recursively recursively .parent of sub elements.
-func (c *Collection) buildTree() {
-	for _, child := range c.Children {
-		child.parent = c
-		child.buildTree()
-	}
-	for _, request := range c.Requests {
-		request.parent = c
-	}
 }
 
 func (r *Request) getAuth() (auth string) {
