@@ -1,6 +1,9 @@
 package airazor
 
-import "sync"
+import (
+	"encoding/json"
+	"sync"
+)
 
 type Collection struct {
 	parent *Collection
@@ -11,6 +14,15 @@ type Collection struct {
 
 	Requests []*Request    `json:"requests"`
 	Children []*Collection `json:"children"`
+}
+
+func ParseCollection(data []byte) (*Collection, error) {
+	c := &Collection{}
+	if err := json.Unmarshal(data, c); err != nil {
+		return nil, err
+	}
+	c.buildTree()
+	return c, nil
 }
 
 // Recursively recursively .parent of sub elements.

@@ -1,0 +1,21 @@
+{
+	"name": "Global",
+	"children": [
+		{
+			"name": "Sub1",
+			"requests": [
+				{
+					"name": "Not found",
+					"method": "GET",
+					"URL": "https://jsonplaceholder.typicode.com/notfound",
+					"test": "assert(404, code);\nassert(\"{}\", text());",
+					"response": {}
+				}
+			]
+		},
+		{
+			"name": "Sub1",
+			"requests": []
+		}
+	]
+}
