@@ -37,9 +37,9 @@ func (c *Collection) buildTree() {
 }
 
 // Remove all response object of all requests.
-func (c *Collection) removeResponse() {
+func (c *Collection) RemoveResponse() {
 	for _, child := range c.Children {
-		child.removeResponse()
+		child.RemoveResponse()
 	}
 	for _, request := range c.Requests {
 		request.Response = nil

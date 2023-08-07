@@ -25,7 +25,7 @@ func main() {
 
 	fmt.Println("fetch ...")
 	collection.Fetch(&airazor.Config{
-		NewContext:   context.Background,
+		Context:      context.Background(),
 		RoundTripper: http.DefaultTransport,
 		LimitBody:    500_000,
 	})

@@ -47,7 +47,7 @@ func TestCollectionBuildTree(t *testing.T) {
 
 func TestCollectionRemoveResponse(t *testing.T) {
 	root, child, subchild := creatFakeCollection()
-	root.removeResponse()
+	root.RemoveResponse()
 	assert.Nil(t, root.Requests[0].Response)
 	assert.Nil(t, root.Requests[1].Response)
 	assert.Nil(t, child.Requests[0].Response)

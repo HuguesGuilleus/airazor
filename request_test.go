@@ -14,8 +14,8 @@ func TestFetch(t *testing.T) {
 	called := false
 
 	config := Config{
-		LimitBody:  5,
-		NewContext: context.Background,
+		LimitBody: 5,
+		Context:   context.Background(),
 		RoundTripper: mock_transport.Inspector(func(request *http.Request) {
 			called = true
 			assert.Equal(t, "METHOD", request.Method)

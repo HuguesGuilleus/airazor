@@ -3,6 +3,7 @@ export function $(name, ...components) {
 }
 
 export function render(components, root = document.body) {
+	if (typeof root == "string") return render(components, document.getElementById(root));
 	root.innerHTML = "";
 	const ids = { $: [] };
 	createChildren(root, [components], ids);
@@ -13,7 +14,7 @@ export function render(components, root = document.body) {
 
 function createChildren(parent, components, ids) {
 	for (const c of components) {
-		if (!c) {
+		if (!c || c === true) {
 			continue;
 		} else if (Array.isArray(c)) {
 			createChildren(parent, c, ids);
@@ -21,7 +22,7 @@ function createChildren(parent, components, ids) {
 		} else if (typeof c == "function") {
 			createChildren(parent, [c(parent)], ids);
 		} else if (typeof c == "string") {
-			createElement(parent, { $: "span", t: c }, ids);
+			parent.innerText += c;
 		} else if (c instanceof HTMLElement) {
 			parent.append(c);
 		} else {
@@ -34,7 +35,7 @@ const SPLITER = /([.#])([^.#]*)/g;
 
 function createElement(parent, c, ids) {
 	const element = document.createElement(c.$.split(SPLITER)[0]);
-	element.innerText += c.t || "";
+	element.innerText = c.t || "";
 
 	// Attribute
 	for (const [attr, attrType, attrValue] of c.$.matchAll(SPLITER)) {

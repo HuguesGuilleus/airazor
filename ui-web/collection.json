@@ -1,0 +1,48 @@
+{
+	"name": "Global",
+	"requests": null,
+	"children": [
+		{
+			"name": "Sub1",
+			"requests": [
+				{
+					"name": "Not found",
+					"method": "GET",
+					"url": "https://jsonplaceholder.typicode.com/notfound",
+					"header": {
+						"Accept": [
+							"application/json"
+						],
+						"Content-Type": [
+							"text/plain"
+						]
+					},
+					"body": "Hello world!\n",
+					"test": "assert(404, code);\nassert(\"{}\", text());",
+					"response": {
+						"statusCode": 404,
+						"header": {
+							"Content-Length": [
+								"2"
+							],
+							"Content-Type": [
+								"text/plain"
+							]
+						},
+						"body": "e30=",
+						"testFails": [
+							"hello:\n1",
+							"hello:\n2"
+						]
+					}
+				}
+			],
+			"children": null
+		},
+		{
+			"name": "Sub1",
+			"requests": [],
+			"children": null
+		}
+	]
+}

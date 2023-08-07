@@ -8,7 +8,7 @@ body {
 
 /* TREE */
 
-.save {
+.bigAct {
 	margin-bottom: 0.5ex;
 	border: none;
 	background-color: dodgerblue;
@@ -46,16 +46,20 @@ body {
 	background-color: orangered;
 }
 
+.status {
+	background-color: dodgerblue;
+}
+
 /* MAIN */
 
-.content {
+#content {
 	display: grid;
 	grid-template-columns: 1.2fr 1fr;
 
 }
 
-.content,
-.content>* {
+#content,
+#content>* {
 	border: solid 0.3ex;
 }
 
@@ -70,6 +74,7 @@ code {
 	box-sizing: border-box;
 	margin: 0;
 	padding: 0.5ex;
+	overflow-wrap: anywhere;
 }
 
 textarea:focus {
@@ -94,7 +99,21 @@ textarea[name=test] {
 	grid-column: 2;
 }
 
+output {
+	background-color: mediumseagreen;
+}
+
 output.result-test {
-	grid-row: 4 / 6;
+	grid-row: 3 / 5;
 	grid-column: 2;
+}
+
+.fail {
+	background-color: yellowgreen;
+	margin-bottom: .6ex;
+	padding: 0.5ex;
+}
+
+.fail:last-child {
+	margin-bottom: 0;
 }

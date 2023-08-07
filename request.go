@@ -30,22 +30,21 @@ type Request struct {
 }
 
 type Response struct {
-	Name       string      `json:"name"`
-	StatusCode int         `json:"StatusCode"`
-	Header     http.Header `json:"Header"`
-	Body       []byte      `json:"Body"`
-	TestFails  []string    `json:"TestFails"`
+	StatusCode int         `json:"statusCode"`
+	Header     http.Header `json:"header"`
+	Body       []byte      `json:"body"`
+	TestFails  []string    `json:"testFails"`
 }
 
 type Config struct {
-	NewContext func() context.Context
+	Context context.Context
 	http.RoundTripper
 	LimitBody int64
 }
 
 func (request *Request) Fetch(config *Config) error {
 	httpRequest, err := http.NewRequestWithContext(
-		config.NewContext(),
+		config.Context,
 		request.Method,
 		request.URL,
 		bytes.NewReader([]byte(request.Body)),
