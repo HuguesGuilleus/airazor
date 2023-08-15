@@ -3,10 +3,10 @@ import { $$content, defineHeadPropertie } from "./content.mjs";
 
 const PARENT = Symbol("parent");
 
-$$main(fetch("api/collection.json"));
-
 let collection = [];
 let focusRequest = null;
+
+$$main(fetch("api/collection.json"));
 
 async function $$main(request) {
 	render("loading ...");
@@ -18,14 +18,14 @@ async function $$main(request) {
 function $$display() {
 	render([
 		$("aside.tree",
-			$b("button.bigAct", "Save", () => {
+			$b("button.bigAct", "Save", "", () => {
 				fetch("/api/collection.json", {
 					method: "PUT",
 					headers: { "Content-Type": "application/json" },
 					body: JSON.stringify(collection)
-				}).then(({ ok }) => alert("saving: " + ok))
+				}).then(({ ok }) => alert("saving: " + (ok ? "SUCESS" : "FAIL")))
 			}),
-			$b("button.bigAct", "Run all", () => {
+			$b("button.bigAct", "Run all", "", () => {
 				$$main(fetch("/api/exe", {
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
@@ -36,9 +36,13 @@ function $$display() {
 		),
 		$("div#content"),
 	]);
+	if (focusRequest) {
+		$$content(focusRequest);
+	}
 }
 
 async function prepareCollection(promiseResponse) {
+	focusRequest = null;
 	const collection = await promiseResponse.then(rep => rep.json());
 	prepareItem(collection);
 	return collection;
@@ -54,6 +58,9 @@ function prepareItem(parent) {
 	for (const request of parent.requests) {
 		request[PARENT] = parent;
 		defineHeadPropertie(request);
+	}
+	if (!focusRequest) {
+		focusRequest = parent.requests[0];
 	}
 }
 
@@ -79,6 +86,7 @@ function $treeItem(col) {
 			// }),
 			" ", $b("button.execute", "C+", "New Collection"),
 			// " ", $b("button.execute", "R+"),
+			$renameItem(col, false),
 			" ", $b("button.execute", "-", "Remove the colection", () => {
 				if (!col[PARENT]) {
 					resetCollection();
@@ -99,10 +107,10 @@ function $treeRequest(request) {
 		$: ["div.tree-item.item-request", request == focusRequest && ".item-focus"],
 		c: [
 			$("span.tree-name", request.name),
-			" ",
-			$("span.status",
+			" ", $("span.status",
 				!request.response ? "[?]" : !request.response.testFails ? "[V]" : "[X]"
 			),
+			$renameItem(request, true),
 			" ", $b("button.execute", "-", "Remove the request", () => {
 				const parentRequests = request[PARENT].requests;
 				parentRequests.splice(parentRequests.indexOf(request), 1);
@@ -115,4 +123,19 @@ function $treeRequest(request) {
 			$$content(request);
 		},
 	};
+}
+
+function $renameItem(item, isRequest) {
+	return [
+		" ",
+		$b("button.execute", "R", "Rename", () => {
+			const name = window.prompt("Rename", item.name);
+			if (!name) return;
+			item.name = name;
+			if (isRequest) {
+				focusRequest = item;
+			}
+			$$display();
+		}),
+	];
 }
