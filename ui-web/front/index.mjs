@@ -6,6 +6,7 @@ const PARENT = Symbol("parent");
 $$main(fetch("api/collection.json"));
 
 let collection = [];
+let focusRequest = null;
 
 async function $$main(request) {
 	render("loading ...");
@@ -76,9 +77,9 @@ function $treeItem(col) {
 			// 	col.request ??= [];
 			// 	col.request.push([{ name }]);
 			// }),
-			// " ", $b("button.execute", "C+"),
+			" ", $b("button.execute", "C+", "New Collection"),
 			// " ", $b("button.execute", "R+"),
-			" ", $b("button.execute", "-", () => {
+			" ", $b("button.execute", "-", "Remove the colection", () => {
 				if (!col[PARENT]) {
 					resetCollection();
 				} else {
@@ -95,19 +96,23 @@ function $treeItem(col) {
 
 function $treeRequest(request) {
 	return {
-		$: "div.tree-item.item-request",
+		$: ["div.tree-item.item-request", request == focusRequest && ".item-focus"],
 		c: [
 			$("span.tree-name", request.name),
 			" ",
 			$("span.status",
 				!request.response ? "[?]" : !request.response.testFails ? "[V]" : "[X]"
 			),
-			" ", $b("button.execute", "-", () => {
+			" ", $b("button.execute", "-", "Remove the request", () => {
 				const parentRequests = request[PARENT].requests;
 				parentRequests.splice(parentRequests.indexOf(request), 1);
 				$$display();
 			}),
 		],
-		onclick() { $$content(request); },
+		onclick() {
+			focusRequest = request;
+			$$display();
+			$$content(request);
+		},
 	};
 }

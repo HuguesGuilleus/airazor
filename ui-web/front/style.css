@@ -30,6 +30,10 @@ body {
 	border-left-color: silver;
 }
 
+.item-focus {
+	background-color: dodgerblue;
+}
+
 .tree-name {
 	font-weight: bold;
 }

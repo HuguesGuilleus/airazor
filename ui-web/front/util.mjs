@@ -3,8 +3,8 @@ export function $(name, ...components) {
 }
 
 // Create button componenent with click handler.
-export function $b(n, t, onclick) {
-	return { $: n, t, onclick };
+export function $b(n, t, title, onclick) {
+	return { $: n, t, title, onclick };
 }
 
 export function render(components, root = document.body) {
