@@ -2,6 +2,11 @@ export function $(name, ...components) {
 	return { $: name, c: components };
 }
 
+// Create button componenent with click handler.
+export function $b(n, t, onclick) {
+	return { $: n, t, onclick };
+}
+
 export function render(components, root = document.body) {
 	if (typeof root == "string") return render(components, document.getElementById(root));
 	root.innerHTML = "";
@@ -22,7 +27,7 @@ function createChildren(parent, components, ids) {
 		} else if (typeof c == "function") {
 			createChildren(parent, [c(parent)], ids);
 		} else if (typeof c == "string") {
-			parent.innerText += c;
+			parent.append(new Text(c));
 		} else if (c instanceof HTMLElement) {
 			parent.append(c);
 		} else {
@@ -34,11 +39,12 @@ function createChildren(parent, components, ids) {
 const SPLITER = /([.#])([^.#]*)/g;
 
 function createElement(parent, c, ids) {
-	const element = document.createElement(c.$.split(SPLITER)[0]);
-	element.innerText = c.t || "";
+	const type = prepare$(c.$),
+		element = document.createElement(type.split(SPLITER)[0]);
+	element.innerText = c.t ?? "";
 
 	// Attribute
-	for (const [attr, attrType, attrValue] of c.$.matchAll(SPLITER)) {
+	for (const [_, attrType, attrValue] of type.matchAll(SPLITER)) {
 		switch (attrType) {
 			case '.':
 				element.classList.add(attrValue);
@@ -62,4 +68,14 @@ function createElement(parent, c, ids) {
 
 	// Will call the function c.f after the render.
 	if (c.f) ids.$.push(() => c.f(element));
+}
+
+
+function prepare$(name) {
+	if (Array.isArray(name)) {
+		return name
+			.filter(n => n && typeof n !== "boolean")
+			.join("")
+	}
+	return name;
 }

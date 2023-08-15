@@ -55,7 +55,10 @@ body {
 #content {
 	display: grid;
 	grid-template-columns: 1.2fr 1fr;
+}
 
+#content:empty {
+	display: none;
 }
 
 #content,

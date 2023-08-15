@@ -35,6 +35,12 @@
 							"hello:\n2"
 						]
 					}
+				},
+				{
+					"name": "Request 2"
+				},
+				{
+					"name": "Request 3"
 				}
 			],
 			"children": null
