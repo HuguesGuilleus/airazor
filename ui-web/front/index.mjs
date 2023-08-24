@@ -51,6 +51,8 @@ async function prepareCollection(promiseResponse) {
 function prepareItem(parent) {
 	parent.children ??= [];
 	parent.requests ??= [];
+	sortByName(parent.children);
+	sortByName(parent.requests);
 	for (const item of parent.children) {
 		item[PARENT] = parent;
 		prepareItem(item);
@@ -62,6 +64,9 @@ function prepareItem(parent) {
 	if (!focusRequest) {
 		focusRequest = parent.requests[0];
 	}
+}
+function sortByName(items) {
+	items.sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase());
 }
 
 function resetCollection() {
@@ -136,6 +141,7 @@ function $renameItem(item, isRequest) {
 			if (isRequest) {
 				focusRequest = item;
 			}
+			prepareItem(col);
 			$$display();
 		}),
 	];

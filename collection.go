@@ -2,7 +2,10 @@ package airazor
 
 import (
 	"encoding/json"
+	"strings"
 	"sync"
+
+	"golang.org/x/exp/slices"
 )
 
 type Collection struct {
@@ -39,6 +42,9 @@ func (c *Collection) buildTree() {
 
 // Remove all response object of all requests.
 func (c *Collection) RemoveResponse() {
+	slices.SortStableFunc(c.Requests, func(a, b *Request) int { return strings.Compare(a.Name, b.Name) })
+	slices.SortStableFunc(c.Children, func(a, b *Collection) int { return strings.Compare(a.Name, b.Name) })
+
 	for _, child := range c.Children {
 		child.RemoveResponse()
 	}
