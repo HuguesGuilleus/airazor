@@ -38,8 +38,8 @@ func TestAuthentificationJWTHS256(t *testing.T) {
 			"sub":  "lara@croft.co.uk",
 			"name": "Lara CROFT",
 		},
-		Algo: "HS256",
-		Key:  []byte("code"),
+		Algo:      "HS256",
+		KeyString: "code",
 	}})
 }
 func TestAuthentificationJWTHS384(t *testing.T) {
@@ -48,8 +48,8 @@ func TestAuthentificationJWTHS384(t *testing.T) {
 			"sub":  "lara@croft.co.uk",
 			"name": "Lara CROFT",
 		},
-		Algo: "HS384",
-		Key:  []byte("code"),
+		Algo:      "HS384",
+		KeyString: "code",
 	}})
 }
 func TestAuthentificationJWTHS512(t *testing.T) {
@@ -58,10 +58,22 @@ func TestAuthentificationJWTHS512(t *testing.T) {
 			"sub":  "lara@croft.co.uk",
 			"name": "Lara CROFT",
 		},
-		Algo: "HS512",
-		Key:  []byte("code"),
+		Algo:      "HS512",
+		KeyString: "code",
 	}})
 }
 func checkAuth(t *testing.T, header string, auth *Authorization) {
 	assert.Equal(t, header, auth.Header(time.Unix(1688169600, 0)))
+}
+
+// func (jwt AuthorizationJWT) Key() []byte {
+
+func TestAuthorizationJWTKey(t *testing.T) {
+	returnKey := func(auth AuthorizationJWT) {
+		assert.Equal(t, "key", string(auth.Key()))
+	}
+
+	returnKey(AuthorizationJWT{KeyBytes: []byte("key")})
+	returnKey(AuthorizationJWT{KeyString: "key"})
+	returnKey(AuthorizationJWT{KeyBytes: []byte("key"), KeyString: "wrongKey"})
 }

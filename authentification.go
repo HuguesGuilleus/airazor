@@ -12,25 +12,29 @@ import (
 
 // One of the following fields
 type Authorization struct {
-	None   bool
-	Basic  *AuthorizationBasic
-	Bearer string
-	Raw    string
-	JWT    *AuthorizationJWT
+	None   bool                `json:"none,omitempty"`
+	Basic  *AuthorizationBasic `json:"basic,omitempty"`
+	Bearer string              `json:"bearer,omitempty"`
+	Raw    string              `json:"raw,omitempty"`
+	JWT    *AuthorizationJWT   `json:"jwt,omitempty"`
 }
 
 type AuthorizationBasic struct {
-	User, Password string
+	User     string `json:"user"`
+	Password string `json:"password"`
 }
 
 type AuthorizationJWT struct {
-	Jose map[string]any
-	Body map[string]any
+	Jose map[string]any `json:"jose"`
+	Body map[string]any `json:"body"`
 
 	// Possibles values: HS256|HS384|HS512
-	// Else value will produce a none algo signature
-	Algo string
-	Key  []byte
+	// Other value will produce a none algo signature
+	Algo string `json:"algo"`
+
+	// One the the floowing value, use .Key() to gte the value
+	KeyBytes  []byte `json:"key-base64"`
+	KeyString string `json:"key-string"`
 }
 
 // Generate the string to be used in HTTP headers. If the authentification is not defined,
@@ -72,17 +76,24 @@ func (auth *Authorization) Header(now time.Time) string {
 		switch algo {
 		case "none":
 		case "HS256":
-			signature = hamacAndBase64(sha256.New, jwt.Key, jose, ".", body)
+			signature = hamacAndBase64(sha256.New, jwt.Key(), jose, ".", body)
 		case "HS384":
-			signature = hamacAndBase64(sha512.New384, jwt.Key, jose, ".", body)
+			signature = hamacAndBase64(sha512.New384, jwt.Key(), jose, ".", body)
 		case "HS512":
-			signature = hamacAndBase64(sha512.New, jwt.Key, jose, ".", body)
+			signature = hamacAndBase64(sha512.New, jwt.Key(), jose, ".", body)
 		}
 
 		return "Bearer " + jose + "." + body + "." + signature
 	}
 
 	return ""
+}
+
+func (jwt *AuthorizationJWT) Key() []byte {
+	if len(jwt.KeyBytes) > 0 {
+		return jwt.KeyBytes
+	}
+	return []byte(jwt.KeyString)
 }
 
 // Merge the 2 map in a new one.

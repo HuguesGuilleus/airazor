@@ -1,5 +1,7 @@
 //go:build dev
 
+// to run it: go run -tags=dev .
+
 package main
 
 import (

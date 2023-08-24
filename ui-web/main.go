@@ -126,7 +126,7 @@ func readCollection(w http.ResponseWriter, r *http.Request) *airazor.Collection 
 
 func sendCollection(w http.ResponseWriter, collection *airazor.Collection) {
 	data, _ := json.Marshal(collection)
-	serveBytes(w, "application/javascript", data)
+	serveBytes(w, "application/json", data)
 }
 
 func serveBytes(w http.ResponseWriter, mime string, content []byte) {

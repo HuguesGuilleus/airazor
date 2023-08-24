@@ -27,8 +27,8 @@ function createChildren(parent, components, ids) {
 		} else if (typeof c == "function") {
 			createChildren(parent, [c(parent)], ids);
 		} else if (typeof c == "string") {
-			parent.append(new Text(c));
-		} else if (c instanceof HTMLElement) {
+			createElement(parent, { $: "span", t: c }, {});
+		} else if (c instanceof Node) {
 			parent.append(c);
 		} else {
 			createElement(parent, c, ids);

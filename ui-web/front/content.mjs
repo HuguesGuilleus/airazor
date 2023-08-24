@@ -4,7 +4,7 @@ export function defineHeadPropertie(request) {
 	Object.defineProperty(request, "head", {
 		configurable: true,
 		enumerable: true,
-		get() { return this.method + " " + this.url + "\n" + formatHeader(this.header) },
+		get() { return (this.method ?? "GET") + " " + (this.url ?? "http://localhost:8080/") + "\n" + formatHeader(this.header) },
 		set(value) {
 			const [first, ...headers] = value.split("\n");
 			let [_, method, url] = /(\w+)\s+(.*)/.exec(first);
@@ -18,17 +18,25 @@ export function defineHeadPropertie(request) {
 				values.push(value);
 				this.header[key] = values;
 			}
-		}
+		},
 	});
+
+	Object.defineProperty(request, "auth", {
+		configurable: true,
+		enumerable: true,
+		get() { return JSON.stringify(request.authorization ?? {}, null, "\t") },
+		set(value) { this.authorization = JSON.parse(value); },
+	})
 }
 
 // Print the content of one request
 export function $$content(request) {
 	const { response } = request;
 	render([
-		$$contentTextarea(request, "head"),
-		$$contentTextarea(request, "body"),
-		$$contentTextarea(request, "test"),
+		$contentTextarea(request, "head"),
+		$contentTextarea(request, "auth"),
+		$contentTextarea(request, "body"),
+		$contentTextarea(request, "test"),
 		response && [
 			$("output.result-head", response.statusCode + "\n" + formatHeader(response.header)),
 			$("output.result-body", atob(response.body || "")),
@@ -37,13 +45,17 @@ export function $$content(request) {
 	], "content");
 }
 
-function $$contentTextarea(request, name) {
+function $contentTextarea(request, name) {
 	return {
 		$: "textarea", rows: 10,
 		name, placeholder: name,
 		value: request[name] || "",
 		oninput({ target: { value } }) { request[name] = value; },
 	};
+}
+
+function $auth(request) {
+	return $("div", "auth ...");
 }
 
 function formatHeader(header = {}) {
