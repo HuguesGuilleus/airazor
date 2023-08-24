@@ -77,15 +77,16 @@ function $treeItem(col) {
 	return $("div.tree-item",
 		$("div.tree-name",
 			col.name,
-			// " ", $b("button.execute", "C+", () => {
-			// 	// col.request = (col.request ?? [] );
-			// 	const name = prompt("name of the collection");
-			// 	console.log('name:', name);
-			// 	col.request ??= [];
-			// 	col.request.push([{ name }]);
-			// }),
-			" ", $b("button.execute", "C+", "New Collection"),
-			// " ", $b("button.execute", "R+"),
+			" ", $b("button.execute", "C+", "New Collection", () => {
+				col.children.push({ name: prompt("Name of the new collection") });
+				prepareItem(col);
+				$$display();
+			}),
+			" ", $b("button.execute", "R+", "New Request", () => {
+				col.requests.push({ name: prompt("Name of the new request") });
+				prepareItem(col);
+				$$display();
+			}),
 			$renameItem(col, false),
 			" ", $b("button.execute", "-", "Remove the colection", () => {
 				if (!col[PARENT]) {
@@ -97,8 +98,8 @@ function $treeItem(col) {
 				}
 			}),
 		),
-		(col.children || []).map($treeItem),
-		(col.requests || []).map($treeRequest),
+		col.children.map($treeItem),
+		col.requests.map($treeRequest),
 	);
 }
 
