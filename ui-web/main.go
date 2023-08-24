@@ -83,7 +83,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if collection == nil {
 			return
 		}
-		collection.RemoveResponse()
+
 		data, _ := json.MarshalIndent(collection, "", "\t")
 		s.Save(data)
 

@@ -25,7 +25,7 @@ type Request struct {
 
 	Test string `json:"test,omitempty"`
 
-	Error    string    `json:"Error,omitempty"`
+	Error    string    `json:"error,omitempty"`
 	Response *Response `json:"response,omitempty"`
 }
 

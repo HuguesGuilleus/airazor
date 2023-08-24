@@ -31,12 +31,15 @@ export function defineHeadPropertie(request) {
 
 // Print the content of one request
 export function $$content(request) {
-	const { response } = request;
+	const { error, response } = request;
 	render([
 		$contentTextarea(request, "head"),
 		$contentTextarea(request, "auth"),
 		$contentTextarea(request, "body"),
 		$contentTextarea(request, "test"),
+		error && [
+			$("output.result-body", error),
+		],
 		response && [
 			$("output.result-head", response.statusCode + "\n" + formatHeader(response.header)),
 			$("output.result-body", atob(response.body || "")),

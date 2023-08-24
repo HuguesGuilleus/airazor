@@ -22,6 +22,7 @@ func ParseCollection(data []byte) (*Collection, error) {
 		return nil, err
 	}
 	c.buildTree()
+	c.RemoveResponse()
 	return c, nil
 }
 
@@ -42,6 +43,7 @@ func (c *Collection) RemoveResponse() {
 		child.RemoveResponse()
 	}
 	for _, request := range c.Requests {
+		request.Error = ""
 		request.Response = nil
 	}
 }
